@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DigiCreative — Agensi Digital Marketing & Web Development kelasdigi.id</title>
+  <meta name="description"
+    content="Bantu Kamu Melek Digital Secara Terukur & Berkelanjutan. Solusi Social Media, Web Development, Graphic Design, In-House Training, Kelas DiGi Goes to Campus, dan DiGi Potrait." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            digi: {
+              indigo: '#4338ca',
+              violet: '#4f46e5',
+              yellow: '#facc15',
+              dark: '#0f172a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="bg-white text-slate-900 antialiased">
+
+  <!-- ==================== GLOBAL STICKY NAVBAR ==================== -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <a href="#beranda" onclick="navigateTo('beranda'); return false;" class="flex items-center gap-2.5 group">
+        <div
+          class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-extrabold text-sm shadow-md group-hover:scale-105 transition">
+          D
+        </div>
+        <span class="font-extrabold text-lg tracking-tight text-slate-900">
+          DiGi<span class="text-indigo-600 font-semibold">Creative</span>
+        </span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
+        <a href="#beranda" data-nav="beranda" onclick="navigateTo('beranda'); return false;"
+          class="nav-link hover:text-indigo-600 py-1">Beranda</a>
+
+        <!-- Layanan Dropdown -->
+        <div class="relative dropdown-trigger py-2">
+          <button type="button" data-nav="layanan"
+            class="nav-link inline-flex items-center gap-1 hover:text-indigo-600 py-1 cursor-pointer">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+            <span>Layanan</span>
+          </button>
+          <div class="dropdown-panel absolute left-0 top-full pt-2 w-72 z-50">
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-100 p-2 space-y-1">
+              <a href="#social-media" data-dropdown-page="social-media"
+                onclick="navigateTo('social-media'); return false;"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 transition">
+                <span
+                  class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">SM</span>
+                <div>
+                  <p class="text-xs font-bold text-slate-900">Social Media</p>
+                  <p class="text-[11px] text-slate-500">Manajemen & Konten Terpadu</p>
+                </div>
+              </a>
+              <a href="#web-development" data-dropdown-page="web-development"
+                onclick="navigateTo('web-development'); return false;"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 transition">
+                <span
+                  class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">WD</span>
+                <div>
+                  <p class="text-xs font-bold text-slate-900">Web Development</p>
+                  <p class="text-[11px] text-slate-500">Website Cepat & Siap Konversi</p>
+                </div>
+              </a>
+              <a href="#graphic-design" data-dropdown-page="graphic-design"
+                onclick="navigateTo('graphic-design'); return false;"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 transition">
+                <span
+                  class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold">GD</span>
+                <div>
+                  <p class="text-xs font-bold text-slate-900">Graphic Design</p>
+                  <p class="text-[11px] text-slate-500">Branding & Identitas Visual</p>
+                </div>
+              </a>
+              <a href="#kelas-campus" data-dropdown-page="kelas-campus"
+                onclick="navigateTo('kelas-campus'); return false;"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 transition">
+                <span
+                  class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold">KC</span>
+                <div>
+                  <p class="text-xs font-bold text-slate-900">Kelas DiGi Goes to Campus</p>
+                  <p class="text-[11px] text-slate-500">Workshop & Edukasi Mahasiswa</p>
+                </div>
+              </a>
+              <a href="#in-house-training" data-dropdown-page="in-house-training"
+                onclick="navigateTo('in-house-training'); return false;"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 transition">
+                <span
+                  class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">IH</span>
+                <div>
+                  <p class="text-xs font-bold text-slate-900">In House Training</p>
+                  <p class="text-[11px] text-slate-500">Pelatihan Tim Internal Perusahaan</p>
+                </div>
+              </a>
+              <a href="#digi-potrait" data-dropdown-page="digi-potrait"
+                onclick="navigateTo('digi-potrait'); return false;"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-indigo-50 transition">
+                <span
+                  class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center text-xs font-bold">DP</span>
+                <div>
+                  <p class="text-xs font-bold text-slate-900">DiGi Potrait</p>
+                  <p class="text-[11px] text-slate-500">Potret Eksekutif & Studio</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <a href="#profil-perusahaan" data-nav="profil-perusahaan"
+          onclick="navigateTo('profil-perusahaan'); return false;" class="nav-link hover:text-indigo-600 py-1">Profil
+          Perusahaan</a>
+        <a href="#artikel" data-nav="artikel" onclick="navigateTo('artikel'); return false;"
+          class="nav-link hover:text-indigo-600 py-1">Artikel</a>
+        <a href="#kontak" data-nav="kontak" onclick="navigateTo('kontak'); return false;"
+          class="nav-link hover:text-indigo-600 py-1">Kontak</a>
+        <button type="button" onclick="PaymentGateway.open('sm-growth')"
+          class="px-4 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition cursor-pointer">
+          Bayar Paket 💳
+        </button>
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <button type="button" onclick="toggleMobileMenu()"
+        class="md:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 cursor-pointer" aria-label="Toggle menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu Drawer -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 px-4 py-4 space-y-2 shadow-lg">
+      <a href="#beranda" onclick="navigateTo('beranda'); return false;"
+        class="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-indigo-50">Beranda</a>
+      <div>
+        <button type="button" onclick="toggleMobileServices()"
+          class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-indigo-50 cursor-pointer">
+          <span>Layanan</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="mobile-services-sub" class="hidden pl-4 mt-1 space-y-1">
+          <a href="#social-media" onclick="navigateTo('social-media'); return false;"
+            class="block px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600">Social Media</a>
+          <a href="#web-development" onclick="navigateTo('web-development'); return false;"
+            class="block px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600">Web Development</a>
+          <a href="#graphic-design" onclick="navigateTo('graphic-design'); return false;"
+            class="block px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600">Graphic Design</a>
+          <a href="#kelas-campus" onclick="navigateTo('kelas-campus'); return false;"
+            class="block px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600">Kelas DiGi Goes to
+            Campus</a>
+          <a href="#in-house-training" onclick="navigateTo('in-house-training'); return false;"
+            class="block px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600">In House Training</a>
+          <a href="#digi-potrait" onclick="navigateTo('digi-potrait'); return false;"
+            class="block px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600">DiGi Potrait</a>
+        </div>
+      </div>
+      <a href="#profil-perusahaan" onclick="navigateTo('profil-perusahaan'); return false;"
+        class="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-indigo-50">Profil Perusahaan</a>
+      <a href="#artikel" onclick="navigateTo('artikel'); return false;"
+        class="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-indigo-50">Artikel</a>
+      <a href="#kontak" onclick="navigateTo('kontak'); return false;"
+        class="block px-3 py-2 rounded-lg text-sm font-semibold text-slate-800 hover:bg-indigo-50">Kontak</a>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT VIEWS ==================== -->
+  <main id="app-content" class="min-h-[60vh]"></main>
+
+  <!-- ==================== GLOBAL FOOTER ==================== -->
+  <footer class="bg-white border-t border-slate-100 pt-14 pb-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-10 border-b border-slate-100">
+        <div class="md:col-span-4">
+          <div class="flex items-center gap-2.5 mb-3">
+            <div
+              class="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-extrabold text-sm">
+              D</div>
+            <span class="font-extrabold text-lg text-slate-900">DiGi<span
+                class="text-indigo-600 font-semibold">Creative</span></span>
+          </div>
+          <p class="text-xs font-bold text-slate-900 mb-2">Bantu Kamu Meraup Cuan dari Digital</p>
+          <p class="text-xs text-slate-500 leading-relaxed mb-4">
+            Agensi manajemen pemasaran digital komprehensif, mitra pertumbuhan bisnis, kreator, dan UMKM di ekosistem
+            modern Indonesia.
+          </p>
+          <a href="https://kelasdigi.id/#" target="_blank" rel="noopener noreferrer"
+            class="inline-block px-3.5 py-1.5 rounded-full bg-indigo-50 hover:bg-indigo-100 text-xs font-semibold text-slate-600 transition">
+            bagian dari <strong class="text-indigo-600">kelasdigi.id</strong>
+          </a>
+        </div>
+
+        <div class="md:col-span-3">
+          <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-4">Layanan Digital</h4>
+          <ul class="space-y-2.5 text-xs text-slate-500">
+            <li><a href="#web-development" onclick="navigateTo('web-development'); return false;"
+                class="hover:text-indigo-600">Web Development</a></li>
+            <li><a href="#social-media" onclick="navigateTo('social-media'); return false;"
+                class="hover:text-indigo-600">Social Media Management</a></li>
+            <li><a href="#graphic-design" onclick="navigateTo('graphic-design'); return false;"
+                class="hover:text-indigo-600">Graphic Design</a></li>
+            <li><a href="#in-house-training" onclick="navigateTo('in-house-training'); return false;"
+                class="hover:text-indigo-600">In House Training</a></li>
+            <li><a href="#kelas-campus" onclick="navigateTo('kelas-campus'); return false;"
+                class="hover:text-indigo-600">Kelas DiGi Goes to Campus</a></li>
+            <li><a href="#digi-potrait" onclick="navigateTo('digi-potrait'); return false;"
+                class="hover:text-indigo-600">DiGi Potrait</a></li>
+          </ul>
+        </div>
+
+        <div class="md:col-span-2">
+          <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-4">Perusahaan</h4>
+          <ul class="space-y-2.5 text-xs text-slate-500">
+            <li><a href="#profil-perusahaan" onclick="navigateTo('profil-perusahaan'); return false;"
+                class="hover:text-indigo-600">Tentang DigiCreative</a></li>
+            <li><a href="#graphic-design" onclick="navigateTo('graphic-design'); return false;"
+                class="hover:text-indigo-600">Portofolio</a></li>
+            <li><a href="#artikel" onclick="navigateTo('artikel'); return false;" class="hover:text-indigo-600">Artikel
+                Edukasi</a></li>
+            <li><a href="#kontak" onclick="navigateTo('kontak'); return false;" class="hover:text-indigo-600">Hubungi
+                Kami</a></li>
+          </ul>
+        </div>
+
+        <div class="md:col-span-3">
+          <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-4">Induk Perusahaan</h4>
+          <ul class="space-y-2.5 text-xs text-slate-500">
+            <li><a href="#profil-perusahaan" onclick="navigateTo('profil-perusahaan'); return false;"
+                class="hover:text-indigo-600">kelasdigi.id Platform</a></li>
+            <li><a href="#in-house-training" onclick="navigateTo('in-house-training'); return false;"
+                class="hover:text-indigo-600">Bootcamp &amp; Pelatihan</a></li>
+            <li><a href="#kelas-campus" onclick="navigateTo('kelas-campus'); return false;"
+                class="hover:text-indigo-600">Komunitas Cuan Digital</a></li>
+            <li><a href="#kontak" onclick="navigateTo('kontak'); return false;" class="hover:text-indigo-600">Mitra
+                Mentor</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <p>© 2025 Digi Creative (kelasdigi.id). Seluruh Hak Cipta Dilindungi.</p>
+        <div class="flex items-center gap-3">
+          <button onclick="navigateTo('kontak')"
+            class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition cursor-pointer"
+            title="Website">🌐</button>
+          <button onclick="navigateTo('kontak')"
+            class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition cursor-pointer"
+            title="Instagram">📸</button>
+          <button onclick="navigateTo('kontak')"
+            class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-indigo-600 hover:text-white flex items-center justify-center transition cursor-pointer"
+            title="Email">✉️</button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALS & TOASTS ==================== -->
+
+  <!-- Booking / Package Consultation Modal -->
+  <div id="booking-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl relative animate-[fadeInPage_0.2s_ease]">
+      <button type="button" onclick="closeBookingModal()"
+        class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 font-bold cursor-pointer">✕</button>
+      <span id="booking-package-badge"
+        class="inline-block px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-bold mb-3">Layanan</span>
+      <h3 class="text-xl font-extrabold text-slate-900 mb-1">Mulai Konsultasi Proyek</h3>
+      <p class="text-xs text-slate-500 mb-5">Isi data singkat di bawah ini untuk terhubung langsung dengan konsultan
+        DigiCreative.</p>
+
+      <form onsubmit="handleBookingSubmit(event)" class="space-y-4">
+        <input type="hidden" id="booking-service-input" name="service" />
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap</label>
+          <input type="text" name="name" required placeholder="Contoh: Andi Wijaya"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp Aktif</label>
+          <input type="tel" name="phone" required placeholder="0812xxxxxxxx"
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Catatan Singkat (Opsional)</label>
+          <textarea name="notes" rows="2" placeholder="Nama brand/bisnis atau target Anda..."
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+        </div>
+        <button type="submit"
+          class="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg transition cursor-pointer">
+          Lanjutkan ke WhatsApp ↗
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Article Reader Modal -->
+  <div id="article-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[88vh] overflow-y-auto shadow-2xl relative">
+      <button type="button" onclick="closeArticleModal()"
+        class="sticky top-4 float-right mr-4 mt-4 z-10 w-9 h-9 rounded-full bg-white/90 shadow-md hover:bg-slate-100 flex items-center justify-center text-slate-700 font-bold cursor-pointer">✕</button>
+      <img id="modal-article-image" src="" alt="Article Cover" class="w-full h-60 object-cover" />
+      <div class="p-6 sm:p-8">
+        <div class="flex flex-wrap items-center gap-3 mb-3">
+          <span id="modal-article-category"
+            class="px-3 py-1 rounded-full bg-indigo-600 text-white text-[11px] font-bold">Kategori</span>
+          <span id="modal-article-meta" class="text-xs text-slate-500"></span>
+        </div>
+        <h2 id="modal-article-title" class="text-2xl font-extrabold text-slate-900 leading-snug mb-5"></h2>
+        <div id="modal-article-body" class="text-sm text-slate-700 leading-relaxed mb-8"></div>
+        <div class="pt-5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div id="modal-article-initials"
+              class="w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 font-bold text-xs flex items-center justify-center">
+            </div>
+            <span id="modal-article-author" class="text-xs font-bold text-slate-800"></span>
+          </div>
+          <button onclick="closeArticleModal(); openBookingModal('Konsultasi Strategi Artikel', 'Gratis')"
+            class="px-4 py-2 rounded-full bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 cursor-pointer">Diskusikan
+            Strategi Ini →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Gateway Modal -->
+  <div id="payment-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[92vh] overflow-y-auto shadow-2xl relative animate-[fadeInPage_0.2s_ease]">
+      <div class="sticky top-0 z-10 bg-white/95 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-extrabold text-xs flex items-center justify-center">💳</div>
+          <div>
+            <p class="text-xs font-extrabold text-slate-900">DigiPay Checkout Gateway</p>
+            <p class="text-[10px] text-slate-500">Pembayaran Terenkripsi SSL • Instan &amp; Otomatis</p>
+          </div>
+        </div>
+        <div id="pg-step-indicator" class="hidden md:flex items-center gap-2"></div>
+        <button type="button" onclick="PaymentGateway.close()"
+          class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 font-bold cursor-pointer">✕</button>
+      </div>
+
+      <div class="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div id="pg-step-body" class="lg:col-span-7"></div>
+        <div class="lg:col-span-5">
+          <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 sticky top-20">
+            <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-3">Ringkasan Pembayaran</p>
+            <div id="pg-summary-box"></div>
+            <div class="mt-4 pt-3 border-t border-slate-200 flex items-center gap-2 text-[11px] text-slate-500">
+              <span>🔒</span>
+              <span>Didukung QRIS, VA Bank Nasional, E-Wallet &amp; Kartu</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/payment.js"></script>
+</body>
+
+</html>

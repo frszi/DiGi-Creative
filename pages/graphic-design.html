@@ -1,0 +1,216 @@
+<div class="hero-gradient-service pt-14 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div class="lg:col-span-6">
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white leading-tight mb-5">
+              Karya Visual Presisi yang Menghidupkan <span class="text-yellow-300">Karakter Brand</span> Anda
+            </h1>
+            <p class="text-sm sm:text-base text-indigo-100 leading-relaxed mb-7">
+              Dari perancangan Logo, Brand Guidelines, hingga Packaging &amp; Social Media Kit yang meningkatkan nilai
+              jual produk Anda hingga 3x lipat.
+            </p>
+            <div class="flex flex-wrap gap-3 mb-10">
+              <button onclick="openBookingModal('Graphic Design', 'Konsultasi Visual Brand')"
+                class="px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 border border-white/20 text-white font-bold text-sm shadow-lg transition cursor-pointer">Mulai
+                Proyek Desain</button>
+              <button onclick="scrollToSection('graphic-design', 'design-showcase')"
+                class="px-6 py-3 rounded-full bg-white text-slate-900 hover:bg-yellow-300 font-bold text-sm shadow-md transition cursor-pointer">Eksplorasi
+                Portfolio</button>
+            </div>
+            <div class="grid grid-cols-3 gap-6 pt-6 border-t border-white/20">
+              <div>
+                <p class="text-2xl font-extrabold text-white">1.400+</p>
+                <p class="text-xs text-indigo-100">Aset Desain Selesai</p>
+              </div>
+              <div>
+                <p class="text-2xl font-extrabold text-yellow-300">100%</p>
+                <p class="text-xs text-indigo-100">Orisinalitas Karya</p>
+              </div>
+              <div>
+                <p class="text-2xl font-extrabold text-white">300 DPI</p>
+                <p class="text-xs text-indigo-100">Standar Cetak &amp; Digital</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Brand Kit UI Mockup -->
+          <div class="lg:col-span-6">
+            <div class="bg-white rounded-3xl p-6 shadow-2xl border border-white/60">
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-extrabold text-slate-800">Brand Identity Kit v2.0</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold">Vector
+                  Master</span>
+              </div>
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                  <p class="text-[11px] font-bold text-slate-500 mb-2">Palet Warna Primer</p>
+                  <div class="flex gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-indigo-600"></span>
+                    <span class="w-8 h-8 rounded-lg bg-yellow-400"></span>
+                    <span class="w-8 h-8 rounded-lg bg-slate-900"></span>
+                    <span class="w-8 h-8 rounded-lg bg-indigo-100"></span>
+                  </div>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-900 text-white">
+                  <p class="text-[11px] text-slate-400 mb-1">Tipografi Utama</p>
+                  <p class="text-2xl font-extrabold">Aa Bb Cc</p>
+                  <div class="h-1.5 w-full bg-yellow-400 rounded-full mt-2"></div>
+                </div>
+              </div>
+              <div class="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex items-center justify-between">
+                <div>
+                  <p class="text-xs font-extrabold text-slate-900">Packaging &amp; Print Ready</p>
+                  <p class="text-[11px] text-slate-500">AI, EPS, SVG, PDF CMYK &amp; Figma</p>
+                </div>
+                <span
+                  class="px-3 py-1 rounded-full bg-yellow-400 text-slate-900 text-[10px] font-extrabold">Verified</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Showcase Portfolio with Interactive Filter -->
+      <div id="design-showcase" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+            <div>
+              <span
+                class="inline-block px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-extrabold uppercase mb-2">PORTFOLIO
+                TERPILIH</span>
+              <h2 class="text-3xl font-extrabold text-slate-900">Showcase Portofolio &amp; Spektrum Karya Desain</h2>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button data-design-filter="Semua Karya" onclick="renderDesignPortfolio('Semua Karya')">Semua
+                Karya</button>
+              <button data-design-filter="Brand Identity" onclick="renderDesignPortfolio('Brand Identity')">Brand
+                Identity</button>
+              <button data-design-filter="Social Media Kit" onclick="renderDesignPortfolio('Social Media Kit')">Social
+                Media Kit</button>
+              <button data-design-filter="Packaging" onclick="renderDesignPortfolio('Packaging')">Packaging</button>
+            </div>
+          </div>
+
+          <div id="design-portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Populated by js/app.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Workflow Eksplorasi Kreatif -->
+      <div class="py-16 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-10">
+            <span
+              class="inline-block px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-extrabold uppercase mb-2">PROSES
+              KREATIF</span>
+            <h2 class="text-3xl font-extrabold text-slate-900">Workflow Eksplorasi Kreatif DigiCreative</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="bg-white rounded-2xl p-6 border border-slate-100">
+              <span class="text-xs font-extrabold text-indigo-600">01</span>
+              <h4 class="font-extrabold text-slate-900 mt-2 mb-1">Discovery &amp; Moodboard</h4>
+              <p class="text-xs text-slate-500">Memahami positioning brand, target pasar, dan arah visual yang relevan.
+              </p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border border-slate-100">
+              <span class="text-xs font-extrabold text-indigo-600">02</span>
+              <h4 class="font-extrabold text-slate-900 mt-2 mb-1">Sketsa &amp; Prototyping</h4>
+              <p class="text-xs text-slate-500">Eksplorasi beberapa alternatif konsep visual sebelum masuk tahap detail.
+              </p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border border-slate-100">
+              <span class="text-xs font-extrabold text-indigo-600">03</span>
+              <h4 class="font-extrabold text-slate-900 mt-2 mb-1">Finalisasi &amp; Vector Polishing</h4>
+              <p class="text-xs text-slate-500">Penyempurnaan grid, proporsi, tipografi, dan simulasi mockup nyata.</p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 border border-slate-100">
+              <span class="text-xs font-extrabold text-yellow-500">04</span>
+              <h4 class="font-extrabold text-slate-900 mt-2 mb-1">Serah Terima Master File</h4>
+              <p class="text-xs text-slate-500">Pengiriman seluruh file mentah editable beserta panduan brand lengkap.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Design Pricing -->
+      <div class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-extrabold text-slate-900">Pilihan Paket Investasi Desain Grafis</h2>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-3xl p-7 border border-slate-200 flex flex-col justify-between">
+              <div>
+                <h3 class="text-lg font-extrabold text-slate-900">Starter Visual</h3>
+                <p class="text-xs text-slate-500 mb-4">Identitas dasar untuk bisnis baru.</p>
+                <p class="text-3xl font-extrabold text-slate-900 mb-6">Rp 1.850.000</p>
+                <ul class="space-y-2.5 text-xs text-slate-600 mb-8">
+                  <li>✓ 2 Konsep Logo Utama + Filosoﬁ</li>
+                  <li>✓ Palet Warna &amp; Tipografi Dasar</li>
+                  <li>✓ Desain Kartu Nama &amp; Kop Surat</li>
+                  <li>✓ File Master (AI, PDF, PNG)</li>
+                </ul>
+              </div>
+              <button onclick="PaymentGateway.open('gd-starter')"
+                class="w-full py-3 rounded-xl border border-slate-300 hover:border-indigo-600 font-bold text-xs cursor-pointer">Pilih
+                Paket Ini</button>
+            </div>
+
+            <div class="pricing-card-popular bg-white rounded-3xl p-7 relative flex flex-col justify-between">
+              <span
+                class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-yellow-400 text-slate-900 text-[10px] font-extrabold uppercase">REKOMENDASI
+                TERBAIK</span>
+              <div>
+                <h3 class="text-lg font-extrabold text-slate-900">Brand Identity Growth</h3>
+                <p class="text-xs text-slate-500 mb-4">Paket lengkap branding &amp; aset media sosial.</p>
+                <p class="text-3xl font-extrabold text-indigo-600 mb-6">Rp 3.850.000</p>
+                <ul class="space-y-2.5 text-xs text-slate-600 mb-8">
+                  <li>✓ 3 Konsep Logo + Brand Guidelines Book</li>
+                  <li>✓ 15 Template Feed &amp; Story Editable</li>
+                  <li>✓ Desain Packaging / Merchandise Utama</li>
+                  <li>✓ Mockup 3D &amp; Hak Milik Penuh</li>
+                </ul>
+              </div>
+              <button onclick="PaymentGateway.open('gd-growth')"
+                class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg cursor-pointer">Pilih
+                Brand Growth</button>
+            </div>
+
+            <div class="bg-white rounded-3xl p-7 border border-slate-200 flex flex-col justify-between">
+              <div>
+                <h3 class="text-lg font-extrabold text-slate-900">Full Corporate Suite</h3>
+                <p class="text-xs text-slate-500 mb-4">Ekosistem visual menyeluruh untuk korporasi.</p>
+                <p class="text-3xl font-extrabold text-slate-900 mb-6">Rp 7.500.000</p>
+                <ul class="space-y-2.5 text-xs text-slate-600 mb-8">
+                  <li>✓ Full Brand Book (40+ Halaman)</li>
+                  <li>✓ Company Profile PDF &amp; Pitch Deck</li>
+                  <li>✓ 30+ Template Sosial Media &amp; Ads Kit</li>
+                  <li>✓ Dedikasi Art Director</li>
+                </ul>
+              </div>
+              <button onclick="PaymentGateway.open('gd-corporate')"
+                class="w-full py-3 rounded-xl border border-slate-300 hover:border-indigo-600 font-bold text-xs cursor-pointer">Konsultasi
+                Suite</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dark CTA -->
+      <div class="py-14 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            class="cta-gradient-box rounded-3xl p-8 sm:p-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold mb-1">Siap Meningkatkan Kredibilitas dan Daya Tarik Visual
+                Brand Anda?</h2>
+              <p class="text-sm text-indigo-100">Dapatkan sesi konsultasi arah visual gratis bersama Senior Art Director
+                kami.</p>
+            </div>
+            <button onclick="openBookingModal('Graphic Design', 'Konsultasi Desain Gratis')"
+              class="px-6 py-3 rounded-full bg-white text-indigo-700 font-bold text-sm hover:bg-yellow-300 hover:text-slate-900 transition shrink-0 cursor-pointer">Mulai
+              Proyek Desain →</button>
+          </div>
+        </div>
+      </div>

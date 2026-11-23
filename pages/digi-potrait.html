@@ -1,0 +1,158 @@
+<div class="hero-gradient-service pt-14 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div class="lg:col-span-7">
+            <span
+              class="inline-block px-3 py-1 rounded-full bg-yellow-400 text-slate-900 text-[10px] font-extrabold uppercase mb-5">EXECUTIVE
+              PORTRAIT &amp; STUDIO</span>
+            <h1 class="text-3xl sm:text-5xl font-extrabold text-white leading-tight mb-5">
+              Visual DiGi Portrait yang Membangun <span class="text-yellow-300">Otoritas &amp; Karakter Otentik.</span>
+            </h1>
+            <p class="text-sm sm:text-base text-indigo-100 leading-relaxed mb-7 max-w-xl">
+              Sesi pemotretan profesional untuk Founder, Direksi, dan tim korporat dengan arahan gaya khusus agar foto
+              profil Anda memancarkan kredibilitas tinggi.
+            </p>
+            <div class="flex flex-wrap gap-3 mb-10">
+              <button onclick="scrollToSection('digi-potrait', 'portrait-booking')"
+                class="px-6 py-3 rounded-full bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-bold text-sm shadow-lg cursor-pointer">Booking
+                Sesi Foto</button>
+              <button onclick="scrollToSection('digi-potrait', 'portrait-pricing')"
+                class="px-6 py-3 rounded-full bg-white/15 text-white border border-white/30 font-bold text-sm cursor-pointer">Lihat
+                Paket Harga</button>
+            </div>
+            <div class="grid grid-cols-3 gap-6 pt-6 border-t border-white/20 max-w-lg">
+              <div>
+                <p class="text-2xl font-extrabold text-white">350+</p>
+                <p class="text-xs text-indigo-100">Sesi Eksekutif</p>
+              </div>
+              <div>
+                <p class="text-2xl font-extrabold text-yellow-300">100%</p>
+                <p class="text-xs text-indigo-100">Kepuasan Hasil</p>
+              </div>
+              <div>
+                <p class="text-2xl font-extrabold text-white">48 Jam</p>
+                <p class="text-xs text-indigo-100">Pengiriman Master</p>
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="bg-white rounded-3xl p-4 shadow-2xl">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"
+                alt="Executive Portrait" class="rounded-2xl w-full h-72 object-cover object-top" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Yellow Bar -->
+      <div class="bg-yellow-400 py-3.5">
+        <div
+          class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-wrap justify-between gap-4 text-xs font-extrabold text-slate-900">
+          <span>✓ Studio Lighting Standar Editorial</span>
+          <span>✓ Pengarahan Pose &amp; Ekspresi Profesional</span>
+          <span>✓ High-End Natural Skin Retouching</span>
+          <span>✓ Bisa On-Site di Kantor Anda</span>
+        </div>
+      </div>
+
+      <!-- Portrait Pricing -->
+      <div id="portrait-pricing" class="py-16 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-extrabold text-slate-900">Investasi Terukur untuk Persona &amp; Portret Terbaik
+            </h2>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-3xl p-7 border border-slate-200 flex flex-col justify-between">
+              <div>
+                <h3 class="text-lg font-extrabold text-slate-900">Personal Signature</h3>
+                <p class="text-xs text-slate-500 mb-4">Untuk Founder, Penulis, &amp; Profesional.</p>
+                <p class="text-3xl font-extrabold text-slate-900 mb-6">Rp 2.450.000</p>
+                <ul class="space-y-2 text-xs text-slate-600 mb-8">
+                  <li>✓ Sesi Studio 2 Jam (2 Kostum/Look)</li>
+                  <li>✓ 10 Foto High-End Retouch</li>
+                  <li>✓ Seluruh File Raw Terpilih</li>
+                </ul>
+              </div>
+              <button onclick="PaymentGateway.open('dp-personal')"
+                class="w-full py-3 rounded-xl border border-slate-300 font-bold text-xs cursor-pointer">Pilih
+                Personal</button>
+            </div>
+            <div class="pricing-card-popular bg-white rounded-3xl p-7 relative flex flex-col justify-between">
+              <span
+                class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-yellow-400 text-slate-900 text-[10px] font-extrabold uppercase">PALING
+                POPULER</span>
+              <div>
+                <h3 class="text-lg font-extrabold text-slate-900">Executive Authority</h3>
+                <p class="text-xs text-slate-500 mb-4">Branding lengkap untuk C-Level &amp; Public Figure.</p>
+                <p class="text-3xl font-extrabold text-indigo-600 mb-6">Rp 5.800.000</p>
+                <ul class="space-y-2 text-xs text-slate-600 mb-8">
+                  <li>✓ Sesi Studio / Lokasi Khusus 4 Jam</li>
+                  <li>✓ 25 Foto High-End Retouch + MUA</li>
+                  <li>✓ Wardrobe Styling &amp; Moodboard</li>
+                  <li>✓ Pengiriman Master 48 Jam</li>
+                </ul>
+              </div>
+              <button onclick="PaymentGateway.open('dp-executive')"
+                class="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-lg cursor-pointer">Booking
+                Executive</button>
+            </div>
+            <div class="bg-white rounded-3xl p-7 border border-slate-200 flex flex-col justify-between">
+              <div>
+                <h3 class="text-lg font-extrabold text-slate-900">Corporate All-Access</h3>
+                <p class="text-xs text-slate-500 mb-4">Pemotretan tim &amp; jajaran direksi on-site.</p>
+                <p class="text-3xl font-extrabold text-slate-900 mb-6">Rp 14.500.000</p>
+                <ul class="space-y-2 text-xs text-slate-600 mb-8">
+                  <li>✓ Portable Studio Setup di Kantor Anda</li>
+                  <li>✓ Hingga 15 Personel Direksi &amp; Tim</li>
+                  <li>✓ 60+ Foto Master Teredit</li>
+                </ul>
+              </div>
+              <button onclick="PaymentGateway.open('dp-corporate')"
+                class="w-full py-3 rounded-xl bg-slate-900 text-white font-bold text-xs cursor-pointer">Booking
+                Corporate</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Portrait Booking Form -->
+      <div id="portrait-booking" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div
+            class="cta-gradient-box rounded-3xl p-8 sm:p-12 text-white grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <div class="lg:col-span-5">
+              <span
+                class="inline-block px-3 py-1 rounded-full bg-yellow-400 text-slate-900 text-[10px] font-extrabold uppercase mb-4">BOOKING
+                STUDIO</span>
+              <h2 class="text-3xl font-extrabold mb-3">Siap Menghadirkan Citra Visual Terbaik Anda?</h2>
+              <p class="text-sm text-indigo-100">Tentukan jadwal pemotretan studio atau on-site bersama tim fotografer
+                profesional kami.</p>
+            </div>
+            <div class="lg:col-span-7 bg-white text-slate-900 rounded-2xl p-6 sm:p-8 shadow-xl">
+              <h3 class="font-extrabold text-base mb-4">Reservasi Sesi DiGi Potrait</h3>
+              <form onsubmit="handleLeadFormSubmit(event, 'DiGi Potrait Booking')"
+                class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label class="block text-xs font-bold mb-1">Nama Lengkap</label><input type="text" name="Nama"
+                    required placeholder="Nama Anda"
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div><label class="block text-xs font-bold mb-1">WhatsApp Aktif</label><input type="tel" name="WhatsApp"
+                    required placeholder="0812xxxx"
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div><label class="block text-xs font-bold mb-1">Paket Pilihan</label><select name="Paket"
+                    class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-white">
+                    <option>Personal Signature (Rp 2.45jt)</option>
+                    <option>Executive Authority (Rp 5.8jt)</option>
+                    <option>Corporate All-Access (Rp 14.5jt)</option>
+                  </select></div>
+                <div><label class="block text-xs font-bold mb-1">Rencana Tanggal</label><input type="date"
+                    name="Tanggal" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs" /></div>
+                <div class="sm:col-span-2"><button type="submit"
+                    class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg cursor-pointer">Konfirmasi
+                    Jadwal via WhatsApp →</button></div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
