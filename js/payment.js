@@ -439,7 +439,7 @@
                         <p class="text-[11px] text-slate-500">${tx.methodDetail} • ${formatRupiah(tx.total)}</p>
                       </div>
                       <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${tx.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                }">${tx.status === 'PAID' ? 'LUNAS' : 'PENDING'}</span>w
+                }">${tx.status === 'PAID' ? 'LUNAS' : 'PENDING'}</span>
                     </div>
                   `
             )
@@ -478,7 +478,7 @@
       renderSummaryBox();
     },
 
-    applyPromo() {
+    async applyPromo() {
       const input = document.getElementById('pg-promo-input');
       const code = (input?.value || '').trim().toUpperCase();
       if (!code) {
@@ -486,6 +486,31 @@
         renderSummaryBox();
         return;
       }
+
+      // Try PHP Backend first, fallback to local PROMO_CODES
+      try {
+        const res = await fetch(`api/promo.php?code=${encodeURIComponent(code)}`);
+        const json = await res.json();
+        if (res.ok && json?.ok && json.promo) {
+          PROMO_CODES[json.promo.code] = {
+            type: json.promo.type,
+            value: json.promo.value,
+            label: json.promo.label
+          };
+          state.promoCode = json.promo.code;
+          window.showToast('Promo Diterapkan!', json.promo.label);
+          renderSummaryBox();
+          return;
+        }
+        if (res.status === 404 || res.status === 400) {
+          window.showToast('Kode Tidak Valid', json?.message || 'Coba kode DIGI10 atau KELASDIGI.', 'error');
+          renderSummaryBox();
+          return;
+        }
+      } catch {
+        // Fallback below
+      }
+
       if (PROMO_CODES[code]) {
         state.promoCode = code;
         window.showToast('Promo Diterapkan!', PROMO_CODES[code].label);
@@ -506,14 +531,56 @@
       renderBody();
     },
 
-    showHistory() {
+    async showHistory() {
+      try {
+        const res = await fetch('api/orders.php');
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.ok && Array.isArray(json.transactions)) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(json.transactions));
+          }
+        }
+      } catch {
+        // Use localStorage cache
+      }
       state.step = 'history';
       renderBody();
     },
 
-    createInvoice() {
+    async createInvoice() {
       const pkg = getSelectedPackage();
       const { total } = calculateTotals();
+
+      // Try PHP + MySQL Backend first
+      try {
+        const res = await fetch('api/orders.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            package_id: pkg.id,
+            customer_name: state.customer.name,
+            customer_email: state.customer.email,
+            customer_phone: state.customer.phone,
+            company_name: state.customer.company,
+            promo_code: state.promoCode,
+            method_group: state.methodGroup,
+            method_detail: state.methodDetail
+          })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.ok && json.invoice) {
+            state.currentInvoice = json.invoice;
+            saveTransaction(json.invoice);
+            state.step = 3;
+            renderBody();
+            return;
+          }
+        }
+      } catch {
+        // Fallback to local invoice generation
+      }
+
       const invoiceId = 'INV-DIGI-' + String(Date.now()).slice(-6);
       const inv = {
         invoiceId,
@@ -533,10 +600,26 @@
       renderBody();
     },
 
-    confirmPaid() {
+    async confirmPaid() {
       if (!state.currentInvoice) return;
+      let paidAt = new Date().toLocaleString('id-ID');
+
+      try {
+        const res = await fetch('api/payment-confirm.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ invoice_id: state.currentInvoice.invoiceId })
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.ok && json.paidAt) paidAt = json.paidAt;
+        }
+      } catch {
+        // Fallback to local confirmation
+      }
+
       state.currentInvoice.status = 'PAID';
-      state.currentInvoice.paidAt = new Date().toLocaleString('id-ID');
+      state.currentInvoice.paidAt = paidAt;
       saveTransaction(state.currentInvoice);
       state.step = 4;
       window.showToast('Pembayaran Berhasil!', `Invoice ${state.currentInvoice.invoiceId} telah lunas.`);

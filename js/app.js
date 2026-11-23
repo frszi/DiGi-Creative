@@ -324,11 +324,23 @@
     }\nNomor WA saya: ${phone}`;
     const waUrl = `https://wa.me/${window.DIGI_DATA.whatsappNumber}?text=${encodeURIComponent(msg)}`;
 
+    // Save lead to PHP Backend (graceful fallback if backend unavailable)
+    fetch('api/leads.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        source_page: 'booking_modal',
+        full_name: name,
+        phone,
+        notes: `${service}${notes ? ' | ' + notes : ''}`
+      })
+    }).catch(() => {});
+
     window.closeBookingModal();
     form.reset();
     window.showToast(
       'Permintaan Terkirim!',
-      `Terima kasih ${name}, tim konsultan kami siap menghubungi Anda. Membuka WhatsApp...`
+      `Terima kasih ${name}, data tersimpan & tim konsultan kami siap menghubungi Anda.`
     );
     setTimeout(() => {
       window.open(waUrl, '_blank', 'noopener');
@@ -342,11 +354,16 @@
     const formData = new FormData(form);
     const entries = [];
     let primaryName = 'Klien';
+    let primaryPhone = '';
+    let organization = '';
 
     for (const [key, val] of formData.entries()) {
       const cleanVal = String(val).trim();
       if (cleanVal) {
-        if (key.toLowerCase().includes('nama')) primaryName = cleanVal;
+        const lower = key.toLowerCase();
+        if (lower.includes('nama')) primaryName = cleanVal;
+        if (lower.includes('whatsapp') || lower.includes('hp') || lower.includes('tel')) primaryPhone = cleanVal;
+        if (lower.includes('kampus') || lower.includes('perusahaan')) organization = cleanVal;
         entries.push(`${key}: ${cleanVal}`);
       }
     }
@@ -355,6 +372,27 @@
       window.showToast('Form Belum Lengkap', 'Mohon lengkapi data yang diperlukan sebelum mengirim.', 'error');
       return;
     }
+
+    const sourceMap = {
+      'Beranda - Kirim Rencana Bisnismu': 'beranda',
+      'In-House Training': 'in_house_training',
+      'Kelas DiGi Goes to Campus': 'kelas_campus',
+      'DiGi Potrait Booking': 'digi_potrait',
+      'Halaman Kontak': 'kontak'
+    };
+
+    // Persist lead to PHP + MySQL Backend
+    fetch('api/leads.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        source_page: sourceMap[sourceLabel] || 'beranda',
+        full_name: primaryName,
+        phone: primaryPhone || '-',
+        organization_name: organization || null,
+        notes: entries.join(' | ')
+      })
+    }).catch(() => {});
 
     const waText = `Halo DigiCreative! Saya mengirim rencana dari *${sourceLabel}*:\n\n${entries.join('\n')}`;
     const waUrl = `https://wa.me/${window.DIGI_DATA.whatsappNumber}?text=${encodeURIComponent(waText)}`;
@@ -395,8 +433,27 @@
     if (sub) sub.classList.toggle('hidden');
   };
 
+  // --- Hydrate Catalog from PHP + MySQL Backend if Available ---
+  async function syncCatalogFromPhp() {
+    try {
+      const res = await fetch('api/catalog.php');
+      if (!res.ok) return;
+      const json = await res.json();
+      if (json?.ok && json.data && window.DIGI_DATA) {
+        if (json.data.packages?.length) window.DIGI_DATA.packages = json.data.packages;
+        if (json.data.articles?.length) window.DIGI_DATA.articles = json.data.articles;
+        if (json.data.designPortfolio?.length) window.DIGI_DATA.designPortfolio = json.data.designPortfolio;
+        if (json.data.teamMembers?.length) window.DIGI_DATA.teamMembers = json.data.teamMembers;
+      }
+    } catch {
+      // Fallback seamlessly to static js/data.js
+    }
+  }
+
   // --- Init on DOM Ready ---
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+    await syncCatalogFromPhp();
+
     // Check URL hash on load
     const initialHash = window.location.hash.replace('#', '');
     if (initialHash && VALID_PAGES.includes(initialHash)) {
