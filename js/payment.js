@@ -84,16 +84,14 @@
         const active = state.step === num;
         const done = state.step > num;
         return `
-          <div class="flex items-center gap-1.5 text-[11px] font-bold ${
-            active ? 'text-indigo-600' : done ? 'text-emerald-600' : 'text-slate-400'
+          <div class="flex items-center gap-1.5 text-[11px] font-bold ${active ? 'text-indigo-600' : done ? 'text-emerald-600' : 'text-slate-400'
           }">
-            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${
-              active
-                ? 'bg-indigo-600 text-white'
-                : done
-                ? 'bg-emerald-500 text-white'
-                : 'bg-slate-200 text-slate-600'
-            }">${done ? '✓' : num}</span>
+            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${active
+            ? 'bg-indigo-600 text-white'
+            : done
+              ? 'bg-emerald-500 text-white'
+              : 'bg-slate-200 text-slate-600'
+          }">${done ? '✓' : num}</span>
             <span class="hidden sm:inline">${label.split('. ')[1]}</span>
           </div>
         `;
@@ -120,14 +118,13 @@
           <span>Subtotal Paket</span>
           <span>${formatRupiah(subtotal)}</span>
         </div>
-        ${
-          discount > 0
-            ? `<div class="flex justify-between text-emerald-600 font-semibold">
+        ${discount > 0
+        ? `<div class="flex justify-between text-emerald-600 font-semibold">
                 <span>Promo (${promo.label})</span>
                 <span>-${formatRupiah(discount)}</span>
               </div>`
-            : ''
-        }
+        : ''
+      }
         <div class="flex justify-between">
           <span>Biaya Admin Gateway</span>
           <span>${fee === 0 ? '<span class="text-emerald-600 font-bold">Gratis</span>' : formatRupiah(fee)}</span>
@@ -172,11 +169,11 @@
             <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Paket Layanan</label>
             <select id="pg-package-select" onchange="PaymentGateway.selectPackage(this.value)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
               ${pkgs
-                .map(
-                  (p) =>
-                    `<option value="${p.id}" ${p.id === state.selectedPackageId ? 'selected' : ''}>${p.service} — ${p.name} (${formatRupiah(p.price)})</option>`
-                )
-                .join('')}
+          .map(
+            (p) =>
+              `<option value="${p.id}" ${p.id === state.selectedPackageId ? 'selected' : ''}>${p.service} — ${p.name} (${formatRupiah(p.price)})</option>`
+          )
+          .join('')}
             </select>
           </div>
 
@@ -258,41 +255,37 @@
         <div class="space-y-3">
           <p class="text-xs font-bold text-slate-700">Pilih Channel Pembayaran Aman:</p>
           ${methods
-            .map(
-              (m) => `
-            <div class="rounded-2xl border ${
-              state.methodGroup === m.group ? 'border-indigo-600 bg-indigo-50/40' : 'border-slate-200 bg-white'
-            } p-3.5 transition">
+          .map(
+            (m) => `
+            <div class="rounded-2xl border ${state.methodGroup === m.group ? 'border-indigo-600 bg-indigo-50/40' : 'border-slate-200 bg-white'
+              } p-3.5 transition">
               <div class="flex items-center justify-between mb-1">
                 <p class="text-xs font-extrabold text-slate-900">${m.title}</p>
-                ${
-                  m.group === 'qris'
-                    ? '<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold">Gratis Admin</span>'
-                    : ''
-                }
+                ${m.group === 'qris'
+                ? '<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold">Gratis Admin</span>'
+                : ''
+              }
               </div>
               <p class="text-[11px] text-slate-500 mb-2.5">${m.desc}</p>
               <div class="flex flex-wrap gap-2">
                 ${m.options
-                  .map(
-                    (opt) => `
-                  <button type="button" onclick="PaymentGateway.selectMethod('${m.group}', '${opt}')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer ${
-                      state.methodDetail === opt
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
-                        : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-400'
+                .map(
+                  (opt) => `
+                  <button type="button" onclick="PaymentGateway.selectMethod('${m.group}', '${opt}')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer ${state.methodDetail === opt
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                      : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-400'
                     }">${opt}</button>
                 `
-                  )
-                  .join('')}
+                )
+                .join('')}
               </div>
             </div>
           `
-            )
-            .join('')}
+          )
+          .join('')}
 
-          ${
-            state.methodGroup === 'card'
-              ? `<div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-2 gap-2.5">
+          ${state.methodGroup === 'card'
+          ? `<div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-2 gap-2.5">
                   <div class="col-span-2">
                     <label class="block text-[11px] font-bold text-slate-600 mb-1">Nomor Kartu</label>
                     <input type="text" id="pg-card-num" placeholder="4242 •••• •••• 4242" maxlength="19" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white" />
@@ -306,8 +299,8 @@
                     <input type="password" placeholder="123" maxlength="4" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white" />
                   </div>
                 </div>`
-              : ''
-          }
+          : ''
+        }
 
           <div class="pt-3 flex items-center justify-between gap-3">
             <button type="button" onclick="PaymentGateway.goToStep(1)" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer">← Kembali</button>
@@ -433,28 +426,26 @@
             <h4 class="text-sm font-extrabold text-slate-900">Riwayat Transaksi Anda</h4>
             <button type="button" onclick="PaymentGateway.goToStep(1)" class="text-xs font-bold text-indigo-600 hover:underline cursor-pointer">← Buat Transaksi Baru</button>
           </div>
-          ${
-            list.length === 0
-              ? '<p class="text-xs text-slate-500 py-8 text-center">Belum ada riwayat transaksi di browser ini.</p>'
-              : `<div class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          ${list.length === 0
+          ? '<p class="text-xs text-slate-500 py-8 text-center">Belum ada riwayat transaksi di browser ini.</p>'
+          : `<div class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
                   ${list
-                    .map(
-                      (tx) => `
+            .map(
+              (tx) => `
                     <div class="p-3.5 rounded-2xl border border-slate-200 bg-white flex items-center justify-between gap-3">
                       <div>
                         <p class="text-[10px] font-bold text-slate-400">${tx.invoiceId} • ${tx.createdAt}</p>
                         <p class="text-xs font-extrabold text-slate-900">${tx.packageName}</p>
                         <p class="text-[11px] text-slate-500">${tx.methodDetail} • ${formatRupiah(tx.total)}</p>
                       </div>
-                      <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${
-                        tx.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                      }">${tx.status === 'PAID' ? 'LUNAS' : 'PENDING'}</span>
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${tx.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                }">${tx.status === 'PAID' ? 'LUNAS' : 'PENDING'}</span>w
                     </div>
                   `
-                    )
-                    .join('')}
+            )
+            .join('')}
                 </div>`
-          }
+        }
         </div>
       `;
     }
