@@ -1,14 +1,17 @@
-// Payment Gateway Module (Midtrans/Xendit-style Checkout Simulation) for DigiCreative
+// User-Friendly Single-Column Payment Gateway Module for DigiCreative
 (function () {
   const STORAGE_KEY = 'digicreative_transactions_v1';
   const PROMO_CODES = {
-    DIGI10: { type: 'percent', value: 10, label: 'Diskon 10% Pelanggan Baru' },
-    KELASDIGI: { type: 'fixed', value: 250000, label: 'Potongan Rp 250.000 Alumni' }
+    DIGI10: { type: 'percent', value: 10, label: 'Diskon 10%' },
+    KELASDIGI: { type: 'fixed', value: 250000, label: 'Potongan Rp 250rb' }
   };
 
   let state = {
-    step: 1,
+    step: 1, // 1: Data, 2: Metode, 3: Instruksi Bayar, 4: Sukses, 'history': Riwayat
     selectedPackageId: 'sm-growth',
+    showPackagePicker: false,
+    showPromoInput: false,
+    selectedServiceTab: 'Social Media',
     promoCode: '',
     customer: { name: '', email: '', phone: '', company: '' },
     methodGroup: 'qris', // qris | va | ewallet | card
@@ -41,7 +44,7 @@
       discount = promo.type === 'percent' ? Math.round((subtotal * promo.value) / 100) : promo.value;
     }
 
-    const fee = state.methodGroup === 'qris' ? 0 : 4500;
+    const fee = state.step >= 2 && state.methodGroup !== 'qris' ? 4500 : 0;
     const total = Math.max(0, subtotal - discount + fee);
     return { subtotal, discount, fee, total, promo };
   }
@@ -75,64 +78,122 @@
   }
 
   function renderStepIndicator() {
-    const steps = ['1. Paket & Data', '2. Metode Bayar', '3. Pembayaran', '4. Selesai'];
     const el = document.getElementById('pg-step-indicator');
     if (!el) return;
-    el.innerHTML = steps
-      .map((label, i) => {
-        const num = i + 1;
-        const active = state.step === num;
-        const done = state.step > num;
-        return `
-          <div class="flex items-center gap-1.5 text-[11px] font-bold ${active ? 'text-indigo-600' : done ? 'text-emerald-600' : 'text-slate-400'
-          }">
-            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${active
-            ? 'bg-indigo-600 text-white'
-            : done
-              ? 'bg-emerald-500 text-white'
-              : 'bg-slate-200 text-slate-600'
-          }">${done ? '✓' : num}</span>
-            <span class="hidden sm:inline">${label.split('. ')[1]}</span>
-          </div>
-        `;
-      })
-      .join('<span class="text-slate-300 text-xs">›</span>');
+
+    if (state.step === 'history') {
+      el.innerHTML = '';
+      return;
+    }
+
+    const steps = [
+      { num: 1, label: 'Data Diri' },
+      { num: 2, label: 'Metode Bayar' },
+      { num: 3, label: 'Selesai' }
+    ];
+    const currentNormalized = state.step >= 3 ? 3 : state.step;
+
+    el.innerHTML = `
+      <div class="grid grid-cols-3 gap-2">
+        ${steps
+          .map((s) => {
+            const isActive = currentNormalized === s.num;
+            const isDone = currentNormalized > s.num || state.step === 4;
+            return `
+              <div class="flex flex-col gap-1.5">
+                <div class="h-1.5 rounded-full transition-all ${
+                  isDone ? 'bg-emerald-500' : isActive ? 'bg-indigo-600' : 'bg-slate-100'
+                }"></div>
+                <span class="text-[11px] font-bold ${
+                  isDone ? 'text-emerald-600' : isActive ? 'text-indigo-600' : 'text-slate-400'
+                }">${s.num}. ${s.label}</span>
+              </div>
+            `;
+          })
+          .join('')}
+      </div>
+    `;
   }
 
   function renderSummaryBox() {
-    const pkg = getSelectedPackage();
-    const { subtotal, discount, fee, total, promo } = calculateTotals();
     const box = document.getElementById('pg-summary-box');
-    if (!box || !pkg) return;
+    if (!box) return;
+
+    if (state.step === 4 || state.step === 'history') {
+      box.innerHTML = '';
+      return;
+    }
+
+    const pkg = getSelectedPackage();
+    if (!pkg) return;
+    const { discount, fee, total, promo } = calculateTotals();
+    const services = [...new Set(getPackages().map((p) => p.service))];
+    const filteredPackages = getPackages().filter((p) => p.service === state.selectedServiceTab);
 
     box.innerHTML = `
-      <div class="flex items-start justify-between gap-2 pb-3 border-b border-slate-200">
-        <div>
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-600">${pkg.service}</span>
-          <h4 class="text-sm font-extrabold text-slate-900">${pkg.name}</h4>
+      <div class="rounded-2xl bg-indigo-50/70 border border-indigo-100 p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <span class="inline-block px-2 py-0.5 rounded-md bg-white text-indigo-600 text-[10px] font-extrabold uppercase tracking-wider mb-1 shadow-2xs">${pkg.service}</span>
+            <h4 class="text-sm font-extrabold text-slate-900 leading-snug">${pkg.name}</h4>
+            ${
+              state.step === 1
+                ? `<button type="button" onclick="PaymentGateway.togglePackagePicker()" class="mt-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer">
+                    ${state.showPackagePicker ? 'Tutup Pilihan Paket ▲' : 'Ganti Paket ▾'}
+                  </button>`
+                : ''
+            }
+          </div>
+          <div class="text-right shrink-0">
+            <p class="text-[10px] font-semibold text-slate-500 uppercase">Total Tagihan</p>
+            <p class="text-lg font-extrabold text-indigo-700">${formatRupiah(total)}</p>
+            ${
+              discount > 0
+                ? `<span class="inline-block text-[10px] font-bold text-emerald-600">Hemat ${formatRupiah(discount)} (${promo.label})</span>`
+                : fee > 0
+                ? `<span class="inline-block text-[10px] text-slate-400">Termasuk admin Rp 4.500</span>`
+                : ''
+            }
+          </div>
         </div>
-        <span class="text-xs font-extrabold text-slate-900 shrink-0">${formatRupiah(subtotal)}</span>
-      </div>
-      <div class="space-y-1.5 py-3 text-xs text-slate-600 border-b border-slate-200">
-        <div class="flex justify-between">
-          <span>Subtotal Paket</span>
-          <span>${formatRupiah(subtotal)}</span>
-        </div>
-        ${discount > 0
-        ? `<div class="flex justify-between text-emerald-600 font-semibold">
-                <span>Promo (${promo.label})</span>
-                <span>-${formatRupiah(discount)}</span>
-              </div>`
-        : ''
-      }
-        <div class="flex justify-between">
-          <span>Biaya Admin Gateway</span>
-          <span>${fee === 0 ? '<span class="text-emerald-600 font-bold">Gratis</span>' : formatRupiah(fee)}</span>
-        </div>
-      </div>
-      <div class="pt-3 flex items-center justify-between">
-        <span class="text-xs font-bold text-slate-700">Total Pembayaran</span>
-        <span class="text-lg font-extrabold text-indigo-600">${formatRupiah(total)}</span>
+
+        ${
+          state.step === 1 && state.showPackagePicker
+            ? `
+          <div class="mt-4 pt-3.5 border-t border-indigo-100">
+            <div class="flex gap-1.5 overflow-x-auto pb-2 mb-2.5">
+              ${services
+                .map(
+                  (srv) => `
+                <button type="button" onclick="PaymentGateway.selectServiceTab('${srv}')" class="px-3 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition cursor-pointer ${
+                    state.selectedServiceTab === srv
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-white text-slate-600 hover:bg-indigo-100'
+                  }">${srv}</button>
+              `
+                )
+                .join('')}
+            </div>
+            <div class="space-y-1.5">
+              ${filteredPackages
+                .map(
+                  (item) => `
+                <button type="button" onclick="PaymentGateway.selectPackage('${item.id}')" class="w-full px-3.5 py-2.5 rounded-xl border text-left flex items-center justify-between transition cursor-pointer ${
+                    item.id === state.selectedPackageId
+                      ? 'bg-white border-indigo-600 ring-1 ring-indigo-600'
+                      : 'bg-white/70 border-slate-200 hover:bg-white'
+                  }">
+                  <span class="text-xs font-bold text-slate-800">${item.name}</span>
+                  <span class="text-xs font-extrabold text-indigo-600">${formatRupiah(item.price)}</span>
+                </button>
+              `
+                )
+                .join('')}
+            </div>
+          </div>
+        `
+            : ''
+        }
       </div>
     `;
   }
@@ -146,9 +207,7 @@
       const m = String(Math.floor(remaining / 60)).padStart(2, '0');
       const s = String(remaining % 60).padStart(2, '0');
       el.textContent = `${m}:${s}`;
-      if (remaining <= 0) {
-        clearInterval(state.countdownInterval);
-      }
+      if (remaining <= 0) clearInterval(state.countdownInterval);
       remaining--;
     };
     update();
@@ -161,166 +220,186 @@
     const body = document.getElementById('pg-step-body');
     if (!body) return;
 
+    // STEP 1: Clean Customer Info
     if (state.step === 1) {
-      const pkgs = getPackages();
       body.innerHTML = `
         <form id="pg-step1-form" class="space-y-4">
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Pilih Paket Layanan</label>
-            <select id="pg-package-select" onchange="PaymentGateway.selectPackage(this.value)" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
-              ${pkgs
-          .map(
-            (p) =>
-              `<option value="${p.id}" ${p.id === state.selectedPackageId ? 'selected' : ''}>${p.service} — ${p.name} (${formatRupiah(p.price)})</option>`
-          )
-          .join('')}
-            </select>
+            <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Lengkap</label>
+            <input type="text" id="pg-name" required value="${state.customer.name}" placeholder="Masukkan nama lengkap Anda" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" />
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap *</label>
-              <input type="text" id="pg-name" required value="${state.customer.name}" placeholder="Contoh: Budi Santoso" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none" />
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Nomor WhatsApp</label>
+              <input type="tel" id="pg-phone" required value="${state.customer.phone}" placeholder="0812xxxxxxxx" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" />
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp *</label>
-              <input type="tel" id="pg-phone" required value="${state.customer.phone}" placeholder="0812xxxxxxxx" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Email (untuk Invoice) *</label>
-              <input type="email" id="pg-email" required value="${state.customer.email}" placeholder="nama@bisnis.com" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none" />
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Nama Brand / Perusahaan</label>
-              <input type="text" id="pg-company" value="${state.customer.company}" placeholder="Opsional" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-500 outline-none" />
+              <label class="block text-xs font-bold text-slate-700 mb-1.5">Alamat Email</label>
+              <input type="email" id="pg-email" required value="${state.customer.email}" placeholder="nama@email.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" />
             </div>
           </div>
 
+          <!-- Clean Collapsible Promo -->
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Kode Promo (Opsional: coba <span class="text-indigo-600">DIGI10</span> atau <span class="text-indigo-600">KELASDIGI</span>)</label>
-            <div class="flex gap-2">
-              <input type="text" id="pg-promo-input" value="${state.promoCode}" placeholder="Masukkan kode promo" class="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs uppercase focus:ring-2 focus:ring-indigo-500 outline-none" />
-              <button type="button" onclick="PaymentGateway.applyPromo()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold cursor-pointer">Terapkan</button>
-            </div>
+            ${
+              !state.showPromoInput && !state.promoCode
+                ? `<button type="button" onclick="PaymentGateway.togglePromo()" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer">
+                    🏷️ Punya kode promo? Klik di sini
+                  </button>`
+                : `<div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                    <div class="flex items-center justify-between mb-1.5">
+                      <span class="text-[11px] font-bold text-slate-600">Kode Promo</span>
+                      <span class="text-[10px] text-slate-400">Contoh: DIGI10 / KELASDIGI</span>
+                    </div>
+                    <div class="flex gap-2">
+                      <input type="text" id="pg-promo-input" value="${state.promoCode}" placeholder="Ketik kode promo" class="flex-1 px-3 py-2 rounded-lg border border-slate-200 bg-white text-xs uppercase font-bold focus:ring-2 focus:ring-indigo-500 outline-none" />
+                      <button type="button" onclick="PaymentGateway.applyPromo()" class="px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold cursor-pointer">Pakai</button>
+                    </div>
+                  </div>`
+            }
           </div>
 
-          <div class="pt-2 flex flex-wrap items-center justify-between gap-3">
-            <button type="button" onclick="PaymentGateway.showHistory()" class="text-xs font-bold text-indigo-600 hover:underline cursor-pointer">
-              📜 Lihat Riwayat Transaksi (${loadTransactions().length})
-            </button>
-            <button type="submit" class="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 cursor-pointer">
-              Pilih Metode Pembayaran →
-            </button>
-          </div>
+          <button type="submit" class="w-full py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/20 transition cursor-pointer">
+            Lanjut Pilih Pembayaran →
+          </button>
         </form>
       `;
+
       document.getElementById('pg-step1-form').onsubmit = (e) => {
         e.preventDefault();
         state.customer.name = document.getElementById('pg-name').value.trim();
         state.customer.phone = document.getElementById('pg-phone').value.trim();
         state.customer.email = document.getElementById('pg-email').value.trim();
-        state.customer.company = document.getElementById('pg-company').value.trim();
+        state.showPackagePicker = false;
         state.step = 2;
         renderBody();
       };
-    } else if (state.step === 2) {
-      const methods = [
+    }
+
+    // STEP 2: Clean Accordion Payment Methods
+    else if (state.step === 2) {
+      const groups = [
         {
-          group: 'qris',
-          title: 'QRIS (Instan & Bebas Biaya Admin)',
-          desc: 'Scan via GoPay, OVO, DANA, ShopeePay, BCA Mobile, Mandiri Livin',
+          id: 'qris',
+          icon: '⚡',
+          title: 'QRIS Instan',
+          subtitle: 'GoPay, OVO, DANA, ShopeePay, M-Banking',
+          badge: 'Bebas Admin',
           options: ['QRIS All-Payment']
         },
         {
-          group: 'va',
-          title: 'Virtual Account Bank',
-          desc: 'Verifikasi otomatis 24 jam via Mobile Banking / ATM',
+          id: 'va',
+          icon: '🏦',
+          title: 'Transfer Virtual Account',
+          subtitle: 'BCA, Mandiri, BNI, BRI (Otomatis)',
+          badge: '',
           options: ['BCA Virtual Account', 'Mandiri Virtual Account', 'BNI Virtual Account', 'BRI Virtual Account']
         },
         {
-          group: 'ewallet',
-          title: 'E-Wallet Langsung',
-          desc: 'Hubungkan akun dompet digital Anda',
+          id: 'ewallet',
+          icon: '📱',
+          title: 'E-Wallet',
+          subtitle: 'Notifikasi bayar langsung ke aplikasi',
+          badge: '',
           options: ['GoPay', 'OVO', 'DANA']
         },
         {
-          group: 'card',
-          title: 'Kartu Kredit / Debit Online',
-          desc: 'Visa, Mastercard, JCB (3D Secure)',
+          id: 'card',
+          icon: '💳',
+          title: 'Kartu Debit / Kredit',
+          subtitle: 'Visa & Mastercard',
+          badge: '',
           options: ['Kartu Kredit / Debit Visa-Mastercard']
         }
       ];
 
       body.innerHTML = `
         <div class="space-y-3">
-          <p class="text-xs font-bold text-slate-700">Pilih Channel Pembayaran Aman:</p>
-          ${methods
-          .map(
-            (m) => `
-            <div class="rounded-2xl border ${state.methodGroup === m.group ? 'border-indigo-600 bg-indigo-50/40' : 'border-slate-200 bg-white'
-              } p-3.5 transition">
-              <div class="flex items-center justify-between mb-1">
-                <p class="text-xs font-extrabold text-slate-900">${m.title}</p>
-                ${m.group === 'qris'
-                ? '<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold">Gratis Admin</span>'
-                : ''
-              }
-              </div>
-              <p class="text-[11px] text-slate-500 mb-2.5">${m.desc}</p>
-              <div class="flex flex-wrap gap-2">
-                ${m.options
-                .map(
-                  (opt) => `
-                  <button type="button" onclick="PaymentGateway.selectMethod('${m.group}', '${opt}')" class="px-3 py-1.5 rounded-xl text-[11px] font-bold border transition cursor-pointer ${state.methodDetail === opt
-                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
-                      : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-400'
-                    }">${opt}</button>
-                `
-                )
-                .join('')}
-              </div>
-            </div>
-          `
-          )
-          .join('')}
+          ${groups
+            .map((g) => {
+              const selected = state.methodGroup === g.id;
+              return `
+                <div onclick="PaymentGateway.selectGroup('${g.id}', '${g.options[0]}')" class="rounded-2xl border p-4 transition cursor-pointer ${
+                selected ? 'border-indigo-600 bg-indigo-50/30 ring-1 ring-indigo-600' : 'border-slate-200 hover:border-slate-300 bg-white'
+              }">
+                  <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                      <span class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-base shrink-0">${g.icon}</span>
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <p class="text-sm font-extrabold text-slate-900">${g.title}</p>
+                          ${
+                            g.badge
+                              ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold">${g.badge}</span>`
+                              : ''
+                          }
+                        </div>
+                        <p class="text-xs text-slate-500">${g.subtitle}</p>
+                      </div>
+                    </div>
+                    <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                      selected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300'
+                    }">
+                      ${selected ? '<span class="w-2 h-2 rounded-full bg-white"></span>' : ''}
+                    </span>
+                  </div>
 
-          ${state.methodGroup === 'card'
-          ? `<div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 grid grid-cols-2 gap-2.5">
-                  <div class="col-span-2">
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Nomor Kartu</label>
-                    <input type="text" id="pg-card-num" placeholder="4242 •••• •••• 4242" maxlength="19" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white" />
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Exp (MM/YY)</label>
-                    <input type="text" placeholder="12/28" maxlength="5" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white" />
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">CVV</label>
-                    <input type="password" placeholder="123" maxlength="4" class="w-full px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white" />
-                  </div>
-                </div>`
-          : ''
-        }
+                  ${
+                    selected && g.options.length > 1
+                      ? `<div class="mt-3.5 pt-3 border-t border-indigo-100 grid grid-cols-2 gap-2" onclick="event.stopPropagation()">
+                          ${g.options
+                            .map(
+                              (opt) => `
+                            <button type="button" onclick="PaymentGateway.selectMethod('${g.id}', '${opt}')" class="px-3 py-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
+                                state.methodDetail === opt
+                                  ? 'bg-indigo-600 text-white border-indigo-600'
+                                  : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-400'
+                              }">${opt.replace(' Virtual Account', '')}</button>
+                          `
+                            )
+                            .join('')}
+                        </div>`
+                      : ''
+                  }
 
-          <div class="pt-3 flex items-center justify-between gap-3">
-            <button type="button" onclick="PaymentGateway.goToStep(1)" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer">← Kembali</button>
-            <button type="button" onclick="PaymentGateway.createInvoice()" class="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 cursor-pointer">
-              Bayar Sekarang 🔒
+                  ${
+                    selected && g.id === 'card'
+                      ? `<div class="mt-3.5 pt-3 border-t border-indigo-100 grid grid-cols-2 gap-2.5" onclick="event.stopPropagation()">
+                          <input type="text" placeholder="Nomor Kartu (4242 ••••)" maxlength="19" class="col-span-2 px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white outline-none focus:border-indigo-500" />
+                          <input type="text" placeholder="MM/YY" maxlength="5" class="px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white outline-none focus:border-indigo-500" />
+                          <input type="password" placeholder="CVV" maxlength="4" class="px-3 py-2 rounded-lg border border-slate-200 text-xs bg-white outline-none focus:border-indigo-500" />
+                        </div>`
+                      : ''
+                  }
+                </div>
+              `;
+            })
+            .join('')}
+
+          <div class="pt-3 flex items-center gap-3">
+            <button type="button" onclick="PaymentGateway.goToStep(1)" class="px-4 py-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer">
+              ← Kembali
+            </button>
+            <button type="button" onclick="PaymentGateway.createInvoice()" class="flex-1 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-lg shadow-indigo-600/20 transition cursor-pointer">
+              Buat Kode Bayar →
             </button>
           </div>
         </div>
       `;
-    } else if (state.step === 3 && state.currentInvoice) {
+    }
+
+    // STEP 3: Focused Payment Instruction
+    else if (state.step === 3 && state.currentInvoice) {
       const inv = state.currentInvoice;
       let instructionHtml = '';
 
       if (inv.methodGroup === 'qris') {
         instructionHtml = `
           <div class="text-center p-5 rounded-2xl bg-slate-50 border border-slate-200">
-            <p class="text-xs font-extrabold text-slate-900 mb-1">Scan QRIS DigiCreative</p>
-            <p class="text-[11px] text-slate-500 mb-3">Gunakan aplikasi e-wallet atau m-banking apa saja</p>
-            <div class="inline-block p-3 bg-white rounded-2xl shadow-sm border border-slate-200 mb-3">
-              <svg class="w-36 h-36 text-slate-900" viewBox="0 0 100 100" fill="currentColor">
+            <p class="text-xs font-bold text-slate-600 mb-3">Scan kode QRIS di bawah dengan aplikasi pembayaran Anda</p>
+            <div class="inline-block p-4 bg-white rounded-2xl shadow-xs border border-slate-200 mb-2.5">
+              <svg class="w-40 h-40 text-slate-900" viewBox="0 0 100 100" fill="currentColor">
                 <rect x="5" y="5" width="28" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="5"/>
                 <rect x="13" y="13" width="12" height="12"/>
                 <rect x="67" y="5" width="28" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="5"/>
@@ -336,116 +415,118 @@
                 <rect x="68" y="84" width="12" height="8"/>
               </svg>
             </div>
-            <p class="text-[11px] text-slate-500">NMID: ID1026884920112 • PT DigiCreative Indonesia</p>
+            <p class="text-[11px] text-slate-400">PT DigiCreative Indonesia • NMID ID1026884920112</p>
           </div>
         `;
       } else if (inv.methodGroup === 'va') {
         instructionHtml = `
           <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold text-slate-600">Bank Tujuan</span>
-              <span class="text-xs font-extrabold text-indigo-600">${inv.methodDetail}</span>
-            </div>
-            <div class="p-3.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between gap-2">
+            <p class="text-xs font-bold text-slate-500">${inv.methodDetail}</p>
+            <div class="p-4 rounded-xl bg-white border border-slate-200 flex items-center justify-between gap-3">
               <div>
-                <p class="text-[10px] text-slate-400 font-bold uppercase">Nomor Virtual Account</p>
-                <p class="text-base font-extrabold tracking-wider text-slate-900">${inv.vaNumber}</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Nomor Virtual Account</p>
+                <p class="text-lg font-extrabold tracking-wider text-slate-900 mt-0.5">${inv.vaNumber}</p>
               </div>
-              <button type="button" onclick="PaymentGateway.copyText('${inv.vaNumber}')" class="px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold cursor-pointer">Salin</button>
+              <button type="button" onclick="PaymentGateway.copyText('${inv.vaNumber}')" class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-extrabold cursor-pointer">
+                Salin
+              </button>
             </div>
-            <p class="text-[11px] text-slate-500">Transfer sesuai nominal total hingga 3 digit terakhir. Pembayaran terverifikasi otomatis.</p>
           </div>
         `;
       } else {
         instructionHtml = `
-          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
-            <p class="text-xs font-extrabold text-slate-900">${inv.methodDetail}</p>
-            <p class="text-xs text-slate-600">Permintaan otorisasi pembayaran telah dikirim ke akun <strong>${inv.customer.phone}</strong>.</p>
+          <div class="p-5 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1.5">
+            <p class="text-sm font-extrabold text-slate-900">${inv.methodDetail}</p>
+            <p class="text-xs text-slate-500">Silakan selesaikan otorisasi pembayaran pada perangkat Anda (${inv.customer.phone}).</p>
           </div>
         `;
       }
 
       body.innerHTML = `
         <div class="space-y-4">
-          <div class="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5">
-            <div>
-              <p class="text-[10px] font-bold text-amber-700 uppercase">Menunggu Pembayaran • ${inv.invoiceId}</p>
-              <p class="text-xs font-extrabold text-slate-900">Selesaikan sebelum batas waktu</p>
-            </div>
-            <span id="pg-countdown" class="px-2.5 py-1 rounded-lg bg-amber-400 text-slate-900 font-extrabold text-xs">15:00</span>
+          <div class="flex items-center justify-between px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-xs">
+            <span class="font-bold text-amber-800">Batas waktu bayar</span>
+            <span id="pg-countdown" class="font-extrabold text-amber-900">15:00</span>
           </div>
 
           ${instructionHtml}
 
-          <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
-            <button type="button" onclick="PaymentGateway.confirmPaid()" class="flex-1 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg cursor-pointer">
-              ✓ Simulasi Bayar Sukses / Cek Status
-            </button>
-            <button type="button" onclick="PaymentGateway.goToStep(2)" class="px-4 py-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 cursor-pointer">
-              Ganti Metode
-            </button>
-          </div>
+          <button type="button" onclick="PaymentGateway.confirmPaid()" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg transition cursor-pointer">
+            Saya Sudah Membayar ✓
+          </button>
+          <button type="button" onclick="PaymentGateway.goToStep(2)" class="w-full py-2 text-xs font-bold text-slate-500 hover:text-slate-800 cursor-pointer">
+            Ganti metode pembayaran
+          </button>
         </div>
       `;
       startCountdown(900);
-    } else if (state.step === 4 && state.currentInvoice) {
+    }
+
+    // STEP 4: Clean Receipt
+    else if (state.step === 4 && state.currentInvoice) {
       const inv = state.currentInvoice;
       if (state.countdownInterval) clearInterval(state.countdownInterval);
 
       body.innerHTML = `
-        <div class="text-center space-y-4">
-          <div class="w-14 h-14 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl font-extrabold mx-auto">✓</div>
+        <div class="text-center space-y-5 py-2">
+          <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl font-extrabold mx-auto">✓</div>
           <div>
-            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-extrabold uppercase">PEMBAYARAN LUNAS</span>
-            <h3 class="text-xl font-extrabold text-slate-900 mt-2">Terima Kasih, ${inv.customer.name}!</h3>
-            <p class="text-xs text-slate-500 mt-1">Invoice <strong>${inv.invoiceId}</strong> telah terkonfirmasi dan dikirim ke ${inv.customer.email}.</p>
+            <h3 class="text-xl font-extrabold text-slate-900">Pembayaran Berhasil!</h3>
+            <p class="text-xs text-slate-500 mt-1">Bukti lunas dikirim ke <strong>${inv.customer.email}</strong></p>
           </div>
 
-          <div class="text-left p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-            <div class="flex justify-between"><span class="text-slate-500">Paket</span><span class="font-bold text-slate-900">${inv.packageName}</span></div>
-            <div class="flex justify-between"><span class="text-slate-500">Metode</span><span class="font-bold text-slate-900">${inv.methodDetail}</span></div>
-            <div class="flex justify-between"><span class="text-slate-500">Total Dibayar</span><span class="font-extrabold text-emerald-600">${formatRupiah(inv.total)}</span></div>
-            <div class="flex justify-between"><span class="text-slate-500">Waktu Lunas</span><span class="font-semibold text-slate-700">${inv.paidAt}</span></div>
+          <div class="text-left p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2.5">
+            <div class="flex justify-between"><span class="text-slate-500">No. Invoice</span><span class="font-bold text-slate-900">${inv.invoiceId}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">Paket</span><span class="font-bold text-slate-900 text-right">${inv.packageName}</span></div>
+            <div class="flex justify-between"><span class="text-slate-500">Metode</span><span class="font-semibold text-slate-700">${inv.methodDetail}</span></div>
+            <div class="pt-2 border-t border-slate-200 flex justify-between text-sm">
+              <span class="font-bold text-slate-700">Total Dibayar</span>
+              <span class="font-extrabold text-emerald-600">${formatRupiah(inv.total)}</span>
+            </div>
           </div>
 
-          <div class="flex flex-col sm:flex-row gap-2.5 pt-2">
-            <button type="button" onclick="PaymentGateway.sendPaidWhatsApp()" class="flex-1 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg cursor-pointer">
-              Konfirmasi Onboarding via WhatsApp ↗
+          <div class="flex flex-col sm:flex-row gap-2.5">
+            <button type="button" onclick="PaymentGateway.sendPaidWhatsApp()" class="flex-1 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-lg cursor-pointer">
+              Mulai Onboarding di WhatsApp ↗
             </button>
-            <button type="button" onclick="window.print()" class="px-4 py-3 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer">
-              Cetak Invoice
+            <button type="button" onclick="window.print()" class="px-4 py-3.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer">
+              Cetak
             </button>
           </div>
         </div>
       `;
-    } else if (state.step === 'history') {
+    }
+
+    // HISTORY VIEW
+    else if (state.step === 'history') {
       const list = loadTransactions();
       body.innerHTML = `
-        <div class="space-y-3">
+        <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h4 class="text-sm font-extrabold text-slate-900">Riwayat Transaksi Anda</h4>
-            <button type="button" onclick="PaymentGateway.goToStep(1)" class="text-xs font-bold text-indigo-600 hover:underline cursor-pointer">← Buat Transaksi Baru</button>
+            <h4 class="text-sm font-extrabold text-slate-900">Riwayat Transaksi</h4>
+            <button type="button" onclick="PaymentGateway.goToStep(1)" class="text-xs font-bold text-indigo-600 hover:underline cursor-pointer">← Kembali Checkout</button>
           </div>
-          ${list.length === 0
-          ? '<p class="text-xs text-slate-500 py-8 text-center">Belum ada riwayat transaksi di browser ini.</p>'
-          : `<div class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          ${
+            list.length === 0
+              ? '<div class="py-10 text-center text-xs text-slate-400">Belum ada transaksi tersimpan.</div>'
+              : `<div class="space-y-2.5 max-h-80 overflow-y-auto">
                   ${list
-            .map(
-              (tx) => `
+                    .map(
+                      (tx) => `
                     <div class="p-3.5 rounded-2xl border border-slate-200 bg-white flex items-center justify-between gap-3">
                       <div>
-                        <p class="text-[10px] font-bold text-slate-400">${tx.invoiceId} • ${tx.createdAt}</p>
-                        <p class="text-xs font-extrabold text-slate-900">${tx.packageName}</p>
-                        <p class="text-[11px] text-slate-500">${tx.methodDetail} • ${formatRupiah(tx.total)}</p>
+                        <p class="text-[11px] font-extrabold text-slate-900">${tx.packageName}</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">${tx.invoiceId} • ${formatRupiah(tx.total)}</p>
                       </div>
-                      <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${tx.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
-                }">${tx.status === 'PAID' ? 'LUNAS' : 'PENDING'}</span>
+                      <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold ${
+                        tx.status === 'PAID' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                      }">${tx.status === 'PAID' ? 'LUNAS' : 'PENDING'}</span>
                     </div>
                   `
-            )
-            .join('')}
+                    )
+                    .join('')}
                 </div>`
-        }
+          }
         </div>
       `;
     }
@@ -454,10 +535,13 @@
   window.PaymentGateway = {
     open(packageId = 'sm-growth') {
       const pkgs = getPackages();
-      if (pkgs.some((p) => p.id === packageId)) {
-        state.selectedPackageId = packageId;
+      const found = pkgs.find((p) => p.id === packageId);
+      if (found) {
+        state.selectedPackageId = found.id;
+        state.selectedServiceTab = found.service;
       }
       state.step = 1;
+      state.showPackagePicker = false;
       const modal = document.getElementById('payment-modal');
       if (modal) {
         modal.classList.remove('hidden');
@@ -473,9 +557,25 @@
       document.body.style.overflow = '';
     },
 
+    togglePackagePicker() {
+      state.showPackagePicker = !state.showPackagePicker;
+      renderSummaryBox();
+    },
+
+    selectServiceTab(srv) {
+      state.selectedServiceTab = srv;
+      renderSummaryBox();
+    },
+
     selectPackage(pkgId) {
       state.selectedPackageId = pkgId;
+      state.showPackagePicker = false;
       renderSummaryBox();
+    },
+
+    togglePromo() {
+      state.showPromoInput = true;
+      renderBody();
     },
 
     async applyPromo() {
@@ -487,7 +587,6 @@
         return;
       }
 
-      // Try PHP Backend first, fallback to local PROMO_CODES
       try {
         const res = await fetch(`api/promo.php?code=${encodeURIComponent(code)}`);
         const json = await res.json();
@@ -498,12 +597,7 @@
             label: json.promo.label
           };
           state.promoCode = json.promo.code;
-          window.showToast('Promo Diterapkan!', json.promo.label);
-          renderSummaryBox();
-          return;
-        }
-        if (res.status === 404 || res.status === 400) {
-          window.showToast('Kode Tidak Valid', json?.message || 'Coba kode DIGI10 atau KELASDIGI.', 'error');
+          window.showToast('Promo Aktif!', json.promo.label);
           renderSummaryBox();
           return;
         }
@@ -513,11 +607,17 @@
 
       if (PROMO_CODES[code]) {
         state.promoCode = code;
-        window.showToast('Promo Diterapkan!', PROMO_CODES[code].label);
+        window.showToast('Promo Aktif!', PROMO_CODES[code].label);
       } else {
-        window.showToast('Kode Tidak Valid', 'Coba kode DIGI10 atau KELASDIGI.', 'error');
+        window.showToast('Kode Tidak Ditemukan', 'Gunakan DIGI10 atau KELASDIGI.', 'error');
       }
       renderSummaryBox();
+    },
+
+    selectGroup(group, defaultDetail) {
+      state.methodGroup = group;
+      state.methodDetail = defaultDetail;
+      renderBody();
     },
 
     selectMethod(group, detail) {
@@ -541,7 +641,7 @@
           }
         }
       } catch {
-        // Use localStorage cache
+        // Fallback to localStorage
       }
       state.step = 'history';
       renderBody();
@@ -551,7 +651,6 @@
       const pkg = getSelectedPackage();
       const { total } = calculateTotals();
 
-      // Try PHP + MySQL Backend first
       try {
         const res = await fetch('api/orders.php', {
           method: 'POST',
@@ -578,7 +677,7 @@
           }
         }
       } catch {
-        // Fallback to local invoice generation
+        // Fallback below
       }
 
       const invoiceId = 'INV-DIGI-' + String(Date.now()).slice(-6);
@@ -615,20 +714,20 @@
           if (json?.ok && json.paidAt) paidAt = json.paidAt;
         }
       } catch {
-        // Fallback to local confirmation
+        // Fallback
       }
 
       state.currentInvoice.status = 'PAID';
       state.currentInvoice.paidAt = paidAt;
       saveTransaction(state.currentInvoice);
       state.step = 4;
-      window.showToast('Pembayaran Berhasil!', `Invoice ${state.currentInvoice.invoiceId} telah lunas.`);
+      window.showToast('Pembayaran Lunas!', `Invoice ${state.currentInvoice.invoiceId} berhasil dikonfirmasi.`);
       renderBody();
     },
 
     copyText(text) {
       navigator.clipboard?.writeText(text);
-      window.showToast('Disalin!', `Nomor ${text} berhasil disalin ke clipboard.`);
+      window.showToast('Disalin!', `Nomor ${text} berhasil disalin.`);
     },
 
     sendPaidWhatsApp() {
